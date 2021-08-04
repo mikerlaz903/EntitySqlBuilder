@@ -30,7 +30,7 @@ namespace EntitySqlBuilder
         private Entity(string name)
         {
             Options = EntityUpdaterOptions.ThrowExceptionIfKeyMissing |
-                      EntityUpdaterOptions.ThrowExceptionIfUpdatableFieldMissing;
+                      EntityUpdaterOptions.ThrowExceptionIfFieldMissing;
 
             Name = name;
         }

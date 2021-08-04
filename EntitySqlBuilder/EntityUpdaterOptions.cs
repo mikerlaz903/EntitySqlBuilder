@@ -10,7 +10,7 @@ namespace EntitySqlBuilder
     public enum EntityUpdaterOptions : ushort
     {
         ThrowExceptionIfKeyMissing = 1,
-        ThrowExceptionIfUpdatableFieldMissing = 2,
+        ThrowExceptionIfFieldMissing = 2,
         IgnoreEntityAndParameterNameCase = 4
     }
 }
