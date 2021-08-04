@@ -10,8 +10,10 @@ namespace EntitySqlBuilder
     {
         internal static List<Entity> EmptyEntityCollection { get; set; } = new();
 
-        internal static Entity GetEmptyEntity(string entityName)
+        internal static Entity GetEmptyEntity(string entityName, bool ignoreCase)
         {
+            var comparison = ignoreCase ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
+
             return EmptyEntityCollection.Find(emptyEntity =>
                 string.Compare(emptyEntity.Name, entityName, StringComparison.Ordinal) == 0)?.Clone();
         }

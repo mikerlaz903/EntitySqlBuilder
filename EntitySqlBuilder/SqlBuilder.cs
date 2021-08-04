@@ -1,4 +1,5 @@
-﻿using EntitySqlBuilder.Parameter;
+﻿using EntitySqlBuilder.Exceptions;
+using EntitySqlBuilder.Parameter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,11 +43,17 @@ namespace EntitySqlBuilder
 
             if (string.IsNullOrWhiteSpace(changedFields))
             {
+                if ((_entity.Options & EntityUpdaterOptions.ThrowExceptionIfUpdatableFieldMissing) ==
+                    EntityUpdaterOptions.ThrowExceptionIfUpdatableFieldMissing)
+                    throw new UpdatableFieldMissingException("No fields was modified.");
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(keyValue))
             {
+                if ((_entity.Options & EntityUpdaterOptions.ThrowExceptionIfKeyMissing) ==
+                    EntityUpdaterOptions.ThrowExceptionIfKeyMissing)
+                    throw new KeyMissingException("Undefined key while composing an update.");
                 return;
             }
 

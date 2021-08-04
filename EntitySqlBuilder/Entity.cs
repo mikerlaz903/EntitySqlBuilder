@@ -1,4 +1,5 @@
-﻿using EntitySqlBuilder.Parameter;
+﻿using EntitySqlBuilder.Exceptions;
+using EntitySqlBuilder.Parameter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,7 @@ namespace EntitySqlBuilder
         public string Id { get; set; } = Guid.NewGuid().ToString();
         public string Name { get; init; }
 
+        public EntityUpdaterOptions Options { get; private set; }
         internal bool Locked
         {
             get => _locked;
@@ -27,11 +29,16 @@ namespace EntitySqlBuilder
         }
         private Entity(string name)
         {
+            Options = EntityUpdaterOptions.ThrowExceptionIfKeyMissing |
+                      EntityUpdaterOptions.ThrowExceptionIfUpdatableFieldMissing;
+
             Name = name;
         }
-        public static Entity GetEntity(string name)
+        internal static Entity GetEntity(string name, EntityUpdaterOptions options = 0)
         {
-            var entity = EntityStorage.GetEmptyEntity(name) ?? new Entity(name);
+            var ignoreCase = (options & EntityUpdaterOptions.IgnoreEntityAndParameterNameCase) != 0;
+            var entity = EntityStorage.GetEmptyEntity(name, ignoreCase) ?? new Entity(name);
+            entity.Options = options;
             return entity;
         }
 
@@ -49,9 +56,9 @@ namespace EntitySqlBuilder
         internal void ConfigureParam(string name, Type type, bool isKey = false)
         {
             if (Locked)
-                throw new Exception("Entity can't be configured after build completes.");
-            if (Parameters.Exists(param => string.Compare(name, param.Info.Name, StringComparison.Ordinal) == 0))
-                throw new Exception("Entity can't be configured after build completes.");
+                throw new ConfigureLockedParameterException("Entity can't be configured after build completes.");
+            if (Parameters.Exists(param => string.Compare(name, param.Info.Name, GetCaseOptions()) == 0))
+                throw new DuplicateParameterNameException("Entity can't be configured after build completes.");
 
             var paramInfo = new EntityParameterInfo()
             {
@@ -65,11 +72,11 @@ namespace EntitySqlBuilder
 
         public bool HasParam(string name)
         {
-            return Parameters.Any(param => string.Compare(param.Info.Name, name, StringComparison.Ordinal) == 0);
+            return Parameters.Any(param => string.Compare(param.Info.Name, name, GetCaseOptions()) == 0);
         }
         public T GetParam<T>(string name)
         {
-            return (T)Parameters.Find(param => string.Compare(param.Info.Name, name, StringComparison.Ordinal) == 0)?
+            return (T)Parameters.Find(param => string.Compare(param.Info.Name, name, GetCaseOptions()) == 0)?
                 .CurrentValue.Value;
         }
         internal void SetParam(string name, EntityParameter<object> value)
@@ -80,7 +87,7 @@ namespace EntitySqlBuilder
         public void SetParam(string name, object newValue)
         {
             CheckParameterConfiguration(name);
-            var parameter = Parameters.Find(param => string.Compare(param.Info.Name, name, StringComparison.Ordinal) == 0);
+            var parameter = Parameters.Find(param => string.Compare(param.Info.Name, name, GetCaseOptions()) == 0);
             if (parameter != null)
                 parameter.CurrentValue = new Emptiable<object>(newValue);
         }
@@ -88,8 +95,18 @@ namespace EntitySqlBuilder
 
         private void CheckParameterConfiguration(string name)
         {
-            if (!Parameters.Exists(param => string.Compare(param.Info.Name, name, StringComparison.Ordinal) == 0))
-                throw new Exception($"Parameter named {name} not configured.");
+            if (!Parameters.Exists(param => string.Compare(param.Info.Name, name, GetCaseOptions()) == 0))
+                throw new UndefinedParameterNameException($"Parameter named {name} not configured.");
+        }
+
+
+        private StringComparison GetCaseOptions()
+        {
+            var stringComparison = StringComparison.Ordinal;
+            if ((Options | EntityUpdaterOptions.IgnoreEntityAndParameterNameCase) ==
+                EntityUpdaterOptions.IgnoreEntityAndParameterNameCase)
+                stringComparison = StringComparison.OrdinalIgnoreCase;
+            return stringComparison;
         }
     }
 }

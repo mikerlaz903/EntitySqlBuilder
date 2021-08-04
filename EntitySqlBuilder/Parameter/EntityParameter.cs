@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EntitySqlBuilder.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,7 +21,7 @@ namespace EntitySqlBuilder.Parameter
             set
             {
                 if (value.Value != null && Info.ParamType != value.Value?.GetType())
-                    throw new Exception($"Modified value must be same type. Target type is {Info.ParamType}, value type is {value.Value?.GetType()}");
+                    throw new ModifyingValueIncorrectTypeException($"Modified value must be same type. Target type is {Info.ParamType}, value type is {value.Value?.GetType()}");
                 if (!InitialValue.HasValue)
                 {
                     InitialValue = value;
@@ -30,7 +31,7 @@ namespace EntitySqlBuilder.Parameter
                 if (EntityComparator.Compare(CurrentValue, value))
                     return;
                 if (Info.IsKey)
-                    throw new Exception("Key field can't be modified.");
+                    throw new ModifyingKeyValueException("Key field can't be modified.");
 
                 _currentValue = value;
                 IsModified = true;
