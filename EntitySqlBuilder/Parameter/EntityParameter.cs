@@ -27,7 +27,7 @@ namespace EntitySqlBuilder.Parameter
                     return;
                 }
 
-                if (string.Compare(CurrentValue.Value.ToString(), value.Value.ToString(), StringComparison.Ordinal) == 0)
+                if (EntityComparator.Compare(CurrentValue, value))
                     return;
                 if (Info.IsKey)
                     throw new Exception("Key field can't be modified.");
