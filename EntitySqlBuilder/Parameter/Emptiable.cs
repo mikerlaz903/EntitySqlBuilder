@@ -51,7 +51,9 @@ namespace EntitySqlBuilder.Parameter
 
         public override bool Equals(object? obj)
         {
-            return _hasValue && base.Equals(obj);
+            if (!_hasValue || (_hasValue && Value == null))
+                return false;
+            return Value.Equals(obj);
         }
 
         public override int GetHashCode()
