@@ -34,7 +34,7 @@ namespace EntitySqlBuilder
 
             Name = name;
         }
-        internal static Entity GetEntity(string name, EntityUpdaterOptions options = 0)
+        public static Entity GetEntity(string name, EntityUpdaterOptions options = 0)
         {
             var ignoreCase = (options & EntityUpdaterOptions.IgnoreEntityAndParameterNameCase) != 0;
             var entity = EntityStorage.GetEmptyEntity(name, ignoreCase) ?? new Entity(name);
