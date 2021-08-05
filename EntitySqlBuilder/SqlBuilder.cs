@@ -10,7 +10,7 @@ namespace EntitySqlBuilder
 {
     public class SqlUpdateBuilder
     {
-        private Entity _entity;
+        private readonly Entity _entity;
 
         public char StringSymbol = '\'';
 

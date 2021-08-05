@@ -74,6 +74,10 @@ namespace EntitySqlBuilder
         {
             return Parameters.Any(param => string.Compare(param.Info.Name, name, GetCaseOptions()) == 0);
         }
+        public bool IsModified(string name)
+        {
+            return Parameters.Find(param => param.Info.Name == name)?.IsModified ?? false;
+        }
         public T GetParam<T>(string name)
         {
             return (T)Parameters.Find(param => string.Compare(param.Info.Name, name, GetCaseOptions()) == 0)?

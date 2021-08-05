@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EntitySqlBuilder.Parameter
 {
-    internal class Emptiable<T>
+    internal class Emptiable<T> : IEquatable<T>
     {
         private readonly bool _hasValue;
         private readonly T _value;
@@ -51,9 +51,16 @@ namespace EntitySqlBuilder.Parameter
 
         public override bool Equals(object? obj)
         {
+            if (_hasValue && Value == null && obj == null)
+                return true;
             if (!_hasValue || (_hasValue && Value == null))
                 return false;
             return Value.Equals(obj);
+        }
+
+        public bool Equals(T? other)
+        {
+            return _hasValue && other.Equals(Value);
         }
 
         public override int GetHashCode()
