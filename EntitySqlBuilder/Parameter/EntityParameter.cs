@@ -34,7 +34,8 @@ namespace EntitySqlBuilder.Parameter
                     throw new ModifyingKeyValueException("Key field can't be modified.");
 
                 _currentValue = value;
-                IsModified = true;
+
+                IsModified = !EntityComparator.Compare(InitialValue, value);
             }
         }
 

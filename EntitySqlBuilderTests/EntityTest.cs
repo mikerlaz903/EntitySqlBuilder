@@ -123,5 +123,23 @@ namespace EntitySqlBuilderTests
 
             Assert.IsFalse(entity.IsModified("LINT1"));
         }
+        [TestMethod]
+        public void SetCurrentValue_SetNewValue_IsModifiedTrue()
+        {
+            var entity = Entity.GetEntity("LIB");
+            entity.SetParam("LINT1", null);
+            entity.SetParam("LINT1", 1);
+
+            Assert.IsTrue(entity.IsModified("LINT1"));
+        }
+        [TestMethod]
+        public void SetCurrentValue_SetNewValueThenOldValue_IsModifiedFalse()
+        {
+            var entity = Entity.GetEntity("LIB");
+            entity.SetParam("LINT1", null);
+            entity.SetParam("LINT1", 1);
+            entity.SetParam("LINT1", null);
+            Assert.IsFalse(entity.IsModified("LINT1"));
+        }
     }
 }

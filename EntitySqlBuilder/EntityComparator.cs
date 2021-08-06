@@ -14,6 +14,10 @@ namespace EntitySqlBuilder
             {
                 return ((IEquatable<object>)item1).Equals((IEquatable<object>)item2);
             }
+            if (typeof(T).IsValueType)
+            {
+                return item1.Equals(item2);
+            }
 
             var stringLeft = item1?.ToString();
             var stringRight = item2?.ToString();
