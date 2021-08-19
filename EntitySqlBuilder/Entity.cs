@@ -80,8 +80,12 @@ namespace EntitySqlBuilder
         }
         public T GetParam<T>(string name)
         {
-            return (T)Parameters.Find(param => string.Compare(param.Info.Name, name, GetCaseOptions()) == 0)?
-                .CurrentValue.Value;
+            var result = Parameters.Find(param => string.Compare(param.Info.Name, name, GetCaseOptions()) == 0)?
+                  .CurrentValue.Value;
+            if (result == null)
+                return default;
+
+            return (T)result;
         }
         internal void SetParam(string name, EntityParameter<object> value)
         {
